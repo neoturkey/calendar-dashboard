@@ -43,6 +43,7 @@ const CalendarDataProvider = (props) => {
 
             const allowedGroups = ['Erin', 'Max'];
             const processedEvents = _.map(resp.result.items, (item) => {
+                item.groups = []; // Default - will be overridden if appropriate
                 const title = item.summary;
                 const groupPrefixMatch = title.match(/^([^-]*)-/);
                 console.log('GPM', groupPrefixMatch);

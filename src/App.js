@@ -1,13 +1,25 @@
 import React from 'react';
 
 import { withGapi } from './components/GAPI';
-import { withCalendarData } from './components/CalendarData';
+import { useCalendarData, withCalendarData } from './components/CalendarData';
 import EventList from './components/EventList';
 
 import _ from 'lodash';
 import { Box } from '@mui/material';
 
+function eventsForGroup(events, group) {
+    const filteredEvents =
+        events && _.filter(events, (event) => _.includes(event.groups, group));
+
+    return {
+        group,
+        events: filteredEvents,
+    };
+}
+
 function App() {
+    const { events } = useCalendarData();
+
     return (
         <Box
             sx={{
@@ -23,12 +35,18 @@ function App() {
                 gap: 2,
             }}
         >
-            <EventList group="Erin" />
-            <EventList group="Max" />
-            <EventList group="Gus" />
-            <EventList group="Imi" />
-            <EventList group="James" />
-            <EventList group="Family" />
+            <EventList {...eventsForGroup(events, 'Erin')} />
+            <EventList {...eventsForGroup(events, 'Max')} />
+            <EventList {...eventsForGroup(events, 'Gus')} />
+            <EventList {...eventsForGroup(events, 'Imi')} />
+            <EventList {...eventsForGroup(events, 'James')} />
+            <EventList
+                group="Family"
+                events={
+                    events &&
+                    _.filter(events, (event) => event.groups.length === 0)
+                }
+            />
         </Box>
     );
 }
