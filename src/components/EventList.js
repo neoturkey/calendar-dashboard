@@ -1,0 +1,59 @@
+// import React from 'react';
+
+import {
+    Avatar,
+    Card,
+    CardContent,
+    CardHeader,
+    List,
+    ListItem,
+    ListItemAvatar,
+    ListItemText,
+} from '@mui/material';
+import { useCalendarData } from './CalendarData';
+
+function EventItem({ event, group }) {
+    const start = new Date(event.start.dateTime || event.start.date);
+
+    const dateSettings = {
+        day: 'numeric',
+        month: 'short',
+        hour: '2-digit',
+        minute: '2-digit',
+    };
+
+    return (
+        <ListItem>
+            <ListItemAvatar>
+                <Avatar>{group[0]}</Avatar>
+            </ListItemAvatar>
+            <ListItemText
+                primary={event.summary}
+                secondary={start.toLocaleDateString('en-GB', dateSettings)}
+            />
+        </ListItem>
+    );
+}
+
+export default function EventList({ group }) {
+    const { groupedEvents } = useCalendarData();
+
+    return (
+        <Card>
+            <CardHeader title={group} />
+            <CardContent>
+                <List>
+                    {groupedEvents &&
+                        groupedEvents[group] &&
+                        groupedEvents[group].map((event) => (
+                            <EventItem
+                                key={event.id}
+                                event={event}
+                                group={group}
+                            />
+                        ))}
+                </List>
+            </CardContent>
+        </Card>
+    );
+}

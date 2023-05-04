@@ -1,37 +1,42 @@
 import React from 'react';
 
-import { useGapi, withGapi } from './components/GAPI';
+import { withGapi } from './components/GAPI';
+import { withCalendarData } from './components/CalendarData';
+import EventList from './components/EventList';
 
-import logo from './logo.svg';
-import './App.css';
+import _ from 'lodash';
+import { Box } from '@mui/material';
 
 function App() {
-    const test = useGapi();
-    console.log('Test', test);
-
-    // const calendarID = 'family11306879740916668579@group.calendar.google.com';
-
     return (
-        <div className="App">
-            <header className="App-header">
-                <img src={logo} className="App-logo" alt="logo" />
-                <p>
-                    Edit <code>src/App.js</code> and save to reload. 2
-                </p>
-                <a
-                    className="App-link"
-                    href="https://reactjs.org"
-                    target="_blank"
-                    rel="noopener noreferrer"
-                >
-                    Learn React
-                </a>
-            </header>
-        </div>
+        <Box
+            sx={{
+                width: '100%',
+                height: '100vh',
+                padding: 2,
+                boxSizing: 'border-box',
+
+                backgroundColor: 'purple',
+                display: 'grid',
+                gridTemplateColumns: '1fr '.repeat(6),
+                gridTemplateRows: '1fr '.repeat(2),
+                gap: 2,
+            }}
+        >
+            <EventList group="Erin" />
+            <EventList group="Max" />
+            <EventList group="Gus" />
+            <EventList group="Imi" />
+            <EventList group="James" />
+            <EventList group="Family" />
+        </Box>
     );
 }
 
-export default withGapi(App, {
-    apiKey: process.env.REACT_APP_GOOGLE_CALENDAR_API_KEY,
-    clientId: process.env.REACT_APP_GOOGLE_CALENDAR_CLIENT_ID,
-});
+export default _.flowRight([
+    _.partial(withGapi, _, {
+        apiKey: process.env.REACT_APP_GOOGLE_CALENDAR_API_KEY,
+        clientId: process.env.REACT_APP_GOOGLE_CALENDAR_CLIENT_ID,
+    }),
+    withCalendarData,
+])(App);
