@@ -11,6 +11,7 @@ import {
     ListItemText,
 } from '@mui/material';
 import { useCalendarData } from './CalendarData';
+import _ from 'lodash';
 
 function EventItem({ event, group }) {
     const start = new Date(event.start.dateTime || event.start.date);
@@ -28,7 +29,7 @@ function EventItem({ event, group }) {
                 <Avatar>{group[0]}</Avatar>
             </ListItemAvatar>
             <ListItemText
-                primary={event.summary}
+                primary={event.subject || event.summary}
                 secondary={start.toLocaleDateString('en-GB', dateSettings)}
             />
         </ListItem>
@@ -36,16 +37,18 @@ function EventItem({ event, group }) {
 }
 
 export default function EventList({ group }) {
-    const { groupedEvents } = useCalendarData();
+    const { events } = useCalendarData();
+
+    const groupEvents =
+        events && _.filter(events, (event) => _.includes(event.groups, group));
 
     return (
         <Card>
             <CardHeader title={group} />
             <CardContent>
                 <List>
-                    {groupedEvents &&
-                        groupedEvents[group] &&
-                        groupedEvents[group].map((event) => (
+                    {groupEvents &&
+                        groupEvents.map((event) => (
                             <EventItem
                                 key={event.id}
                                 event={event}

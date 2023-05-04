@@ -12,14 +12,14 @@ const CalendarDataContext = React.createContext();
 const CalendarDataProvider = (props) => {
     const { gapiClient, gapiClientInitialised, gapiClientSignedIn } = useGapi();
 
-    const [allEvents, setAllEvents] = React.useState();
-    const [groupedEvents, setGroupedEvents] = React.useState();
+    const [events, setEvents] = React.useState();
+    // const [groupedEvents, setGroupedEvents] = React.useState();
 
     React.useEffect(() => {
         if (!gapiClientInitialised || gapiClientSignedIn === undefined) return;
 
         if (!gapiClientSignedIn) {
-            setAllEvents();
+            setEvents();
             return;
         }
 
@@ -29,58 +29,51 @@ const CalendarDataProvider = (props) => {
                 params: {
                     singleEvents: true,
                     orderBy: 'startTime',
-                    timeMin: dayjs().startOf('day').toISOString(),
+                    timeMin: dayjs()
+                        .startOf('day')
+                        // .add(-1, 'day')
+                        .toISOString(),
                     timeMax: dayjs()
                         .endOf('week')
                         .add(1, 'day')
-                        .add(3, 'day')
+                        // .add(3, 'day')
                         .toISOString(),
                 },
             });
-            setAllEvents(resp.result.items);
 
             const allowedGroups = ['Erin', 'Max'];
-            const fallbackGroup = 'Family';
-            const groups = {};
-            _.each(resp.result.items, (item) => {
+            const processedEvents = _.map(resp.result.items, (item) => {
                 const title = item.summary;
                 const groupPrefixMatch = title.match(/^([^-]*)-/);
+                console.log('GPM', groupPrefixMatch);
 
-                let placed = false;
                 if (groupPrefixMatch) {
                     const prefixes = groupPrefixMatch[1]
                         .split(',')
                         .map((s) => s.trim());
-                    console.log('PF', prefixes);
 
                     if (
                         _.every(prefixes, (prefix) =>
                             _.includes(allowedGroups, prefix)
                         )
                     ) {
-                        _.each(prefixes, (prefix) => {
-                            if (!groups[prefix]) groups[prefix] = [];
-                            groups[prefix].push(item);
-                        });
-                        placed = true;
+                        item.groups = prefixes;
+                        item.subject = item.summary
+                            .substring(groupPrefixMatch[0].length)
+                            .trim();
                     }
                 }
 
-                if (!placed) {
-                    if (!groups[fallbackGroup]) groups[fallbackGroup] = [];
-                    groups[fallbackGroup].push(item);
-                }
-                // console.log('GP', title, groupPrefixMatch);
+                return item;
             });
 
-            console.log('Groups', groups);
-            setGroupedEvents(groups);
+            setEvents(processedEvents);
         }
         fetchEvents();
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     return (
-        <CalendarDataContext.Provider value={{ allEvents, groupedEvents }}>
+        <CalendarDataContext.Provider value={{ events }}>
             {props.children}
         </CalendarDataContext.Provider>
     );
