@@ -4,7 +4,8 @@ import { gapi } from 'gapi-script';
 
 const DISCOVERY_DOC =
     'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-const SCOPES = 'https://www.googleapis.com/auth/calendar.readonly';
+const SCOPES =
+    'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/reminders';
 
 const GapiContext = React.createContext();
 

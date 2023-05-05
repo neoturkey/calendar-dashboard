@@ -2,10 +2,26 @@ import React from 'react';
 import dayjs from 'dayjs';
 
 import { useGapi } from './GAPI';
+import { list_reminders } from './reminders';
 
 import _ from 'lodash';
 
 const calendarID = 'family11306879740916668579@group.calendar.google.com';
+
+const allowedGroups = ['Erin', 'Max'];
+function processTitleForSubjects(title) {
+    const groupPrefixMatch = title.match(/^([^-]*)-/);
+    if (groupPrefixMatch) {
+        const prefixes = groupPrefixMatch[1].split(',').map((s) => s.trim());
+
+        if (_.every(prefixes, (prefix) => _.includes(allowedGroups, prefix))) {
+            return {
+                groups: prefixes,
+                subject: title.substring(groupPrefixMatch[0].length).trim(),
+            };
+        }
+    }
+}
 
 const CalendarDataContext = React.createContext();
 
@@ -13,6 +29,7 @@ const CalendarDataProvider = (props) => {
     const { gapiClient, gapiClientInitialised, gapiClientSignedIn } = useGapi();
 
     const [events, setEvents] = React.useState();
+    const [reminders, setReminders] = React.useState();
     // const [groupedEvents, setGroupedEvents] = React.useState();
 
     React.useEffect(() => {
@@ -41,26 +58,13 @@ const CalendarDataProvider = (props) => {
                 },
             });
 
-            const allowedGroups = ['Erin', 'Max'];
             const processedEvents = _.map(resp.result.items, (item) => {
                 item.groups = []; // Default - will be overridden if appropriate
-                const title = item.summary;
-                const groupPrefixMatch = title.match(/^([^-]*)-/);
-                if (groupPrefixMatch) {
-                    const prefixes = groupPrefixMatch[1]
-                        .split(',')
-                        .map((s) => s.trim());
 
-                    if (
-                        _.every(prefixes, (prefix) =>
-                            _.includes(allowedGroups, prefix)
-                        )
-                    ) {
-                        item.groups = prefixes;
-                        item.subject = item.summary
-                            .substring(groupPrefixMatch[0].length)
-                            .trim();
-                    }
+                const groupDetails = processTitleForSubjects(item.summary);
+                if (groupDetails) {
+                    item.groups = groupDetails.groups;
+                    item.subject = groupDetails.subject;
                 }
 
                 item.startTimestamp = dayjs(
@@ -76,8 +80,50 @@ const CalendarDataProvider = (props) => {
         fetchEvents();
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
+    React.useEffect(() => {
+        if (!gapiClientInitialised || !gapiClientSignedIn === undefined) return;
+
+        if (!gapiClientSignedIn) {
+            return;
+        }
+
+        const ar = gapiClient.auth2
+            .getAuthInstance()
+            .currentUser.get()
+            .getAuthResponse();
+        console.log('AR', ar);
+
+        list_reminders(
+            100,
+            gapiClient.auth2
+                .getAuthInstance()
+                .currentUser.get()
+                .getAuthResponse().access_token,
+            function (remindersResp) {
+                const processedReminders = _(remindersResp)
+                    .map((item) => {
+                        const groupDetails = processTitleForSubjects(
+                            item.title
+                        );
+                        if (groupDetails) {
+                            item.groups = groupDetails.groups;
+                            item.subject = groupDetails.subject;
+                        }
+                        item.summary = item.title;
+                        return item;
+                    })
+                    .filter((reminder) => !reminder.done)
+                    .value();
+
+                setReminders(processedReminders);
+            }
+        );
+
+        console.log('Fetch reminders');
+    }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
+
     return (
-        <CalendarDataContext.Provider value={{ events }}>
+        <CalendarDataContext.Provider value={{ events, reminders }}>
             {props.children}
         </CalendarDataContext.Provider>
     );
