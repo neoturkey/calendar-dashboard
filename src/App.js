@@ -12,7 +12,7 @@ function eventsForGroup(events, group) {
         events && _.filter(events, (event) => _.includes(event.groups, group));
 
     return {
-        group,
+        title: group,
         events: filteredEvents,
     };
 }
@@ -41,7 +41,7 @@ function App() {
             <EventList {...eventsForGroup(events, 'Imi')} />
             <EventList {...eventsForGroup(events, 'James')} />
             <EventList
-                group="Family"
+                title="Family"
                 events={
                     events &&
                     _.filter(events, (event) => event.groups.length === 0)

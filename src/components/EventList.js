@@ -11,7 +11,7 @@ import {
     ListItemText,
 } from '@mui/material';
 
-function EventItem({ event, group }) {
+function EventItem({ event, listTitle }) {
     const start = new Date(event.start.dateTime || event.start.date);
 
     const dateSettings = {
@@ -23,7 +23,7 @@ function EventItem({ event, group }) {
     return (
         <ListItem>
             <ListItemAvatar>
-                <Avatar>{group[0]}</Avatar>
+                <Avatar>{listTitle[0]}</Avatar>
             </ListItemAvatar>
             <ListItemText
                 primary={event.subject || event.summary}
@@ -33,10 +33,10 @@ function EventItem({ event, group }) {
     );
 }
 
-export default function EventList({ group, events }) {
+export default function EventList({ title, events }) {
     return (
         <Card>
-            <CardHeader title={group} />
+            <CardHeader title={title} />
             <CardContent>
                 <List>
                     {events &&
@@ -44,7 +44,7 @@ export default function EventList({ group, events }) {
                             <EventItem
                                 key={event.id}
                                 event={event}
-                                group={group}
+                                listTitle={title}
                             />
                         ))}
                 </List>
