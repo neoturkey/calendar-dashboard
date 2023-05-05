@@ -87,12 +87,6 @@ const DataManagerProvider = (props) => {
             return;
         }
 
-        const ar = gapiClient.auth2
-            .getAuthInstance()
-            .currentUser.get()
-            .getAuthResponse();
-        console.log('AR', ar);
-
         list_reminders(
             100,
             gapiClient.auth2
