@@ -7,6 +7,7 @@ import { list_reminders } from './reminders';
 import _ from 'lodash';
 
 const calendarID = 'family11306879740916668579@group.calendar.google.com';
+const tasklistID = 'RHB5eFVyRGI2dlRtS0lRVw';
 
 const allowedGroups = ['Erin', 'Max', 'Gus', 'Imi', 'James'];
 function processTitleForSubjects(title) {
@@ -30,7 +31,7 @@ const DataManagerProvider = (props) => {
 
     const [events, setEvents] = React.useState();
     const [reminders, setReminders] = React.useState();
-    // const [groupedEvents, setGroupedEvents] = React.useState();
+    const [tasks, setTasks] = React.useState();
 
     React.useEffect(() => {
         if (!gapiClientInitialised || gapiClientSignedIn === undefined) return;
@@ -86,6 +87,48 @@ const DataManagerProvider = (props) => {
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     React.useEffect(() => {
+        if (!gapiClientInitialised || gapiClientSignedIn === undefined) return;
+
+        if (!gapiClientSignedIn) {
+            setEvents();
+            return;
+        }
+
+        async function fetchEvents() {
+            const respTaskLists = await gapiClient.client.tasks.tasklists.list({
+                maxResults: 100,
+            });
+            console.log('TaskLists', respTaskLists);
+
+            const resp = await gapiClient.client.tasks.tasks.list({
+                tasklist: tasklistID,
+                maxResults: 100,
+            });
+
+            const processedTasks = _.map(resp.result.items, (item) => {
+                item.groups = []; // Default - will be overridden if appropriate
+
+                const groupDetails = processTitleForSubjects(item.title);
+                if (groupDetails) {
+                    item.groups = groupDetails.groups;
+                    item.subject = groupDetails.subject;
+                } else {
+                    item.groups = [];
+                    item.subject = item.title;
+                }
+
+                item.type = 'task';
+                if (item.due) item.startTimestamp = dayjs(item.due);
+
+                return item;
+            });
+
+            setTasks(processedTasks);
+        }
+        fetchEvents();
+    }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
+
+    React.useEffect(() => {
         if (!gapiClientInitialised || !gapiClientSignedIn === undefined) return;
 
         if (!gapiClientSignedIn) {
@@ -125,8 +168,6 @@ const DataManagerProvider = (props) => {
                 setReminders(processedReminders);
             }
         );
-
-        console.log('Fetch reminders');
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     const eventsForGroup = (group, { maxTimestamp } = {}) => {
@@ -146,11 +187,24 @@ const DataManagerProvider = (props) => {
                     : reminder.groups.length === 0
             );
 
+        const tasksForGroup =
+            tasks &&
+            _.filter(tasks, (task) =>
+                group !== undefined
+                    ? _.includes(task.groups, group)
+                    : task.groups.length === 0
+            );
+
         const allEventsForGroup = _.filter(
-            [...(calendarEventsForGroup || []), ...(remindersForGroup || [])],
+            [
+                ...(calendarEventsForGroup || []),
+                ...(remindersForGroup || []),
+                ...(tasksForGroup || []),
+            ],
             (event) => {
                 if (
                     maxTimestamp &&
+                    event.startTimestamp &&
                     !event.startTimestamp.isBefore(maxTimestamp)
                 )
                     return false;
@@ -159,15 +213,24 @@ const DataManagerProvider = (props) => {
         );
 
         return allEventsForGroup.sort((a, b) => {
-            if (a.startTimestamp.isBefore(b.startTimestamp)) return -1;
-            else if (b.startTimestamp.isBefore(a.startTimestamp)) return 1;
+            if (!a.startTimestamp & !b.startTimestamp) return 0;
+            else if (
+                !a.startTimestamp ||
+                a.startTimestamp.isBefore(b.startTimestamp)
+            )
+                return -1;
+            else if (
+                !b.startTimestamp ||
+                b.startTimestamp.isBefore(a.startTimestamp)
+            )
+                return 1;
             else return 0;
         });
     };
 
     return (
         <DataManagerContext.Provider
-            value={{ events, reminders, eventsForGroup }}
+            value={{ events, reminders, tasks, eventsForGroup }}
         >
             {props.children}
         </DataManagerContext.Provider>

@@ -14,13 +14,19 @@ import {
 } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
+import _ from 'lodash';
+
 function EventItem({ event, showAvatars }) {
     const start = event.startTimestamp;
 
     const overdue =
-        event.type === 'reminder' && start.isBefore(dayjs().startOf('day'));
+        start &&
+        _.includes(['reminder', 'task'], event.type) &&
+        start.isBefore(dayjs().startOf('day'));
 
     const dateFormat = overdue ? 'ddd DD/MM HH:mm' : 'ddd HH:mm';
+    let eventDate = start && start.format(dateFormat);
+    if (event.endTimestamp) eventDate += event.endTimestamp.format(' - HH:mm');
 
     return (
         <ListItem secondaryAction={overdue && <WarningAmberIcon />}>
@@ -35,7 +41,7 @@ function EventItem({ event, showAvatars }) {
             )}
             <ListItemText
                 primary={event.subject || event.summary}
-                secondary={start.format(dateFormat)}
+                secondary={eventDate}
             />
         </ListItem>
     );

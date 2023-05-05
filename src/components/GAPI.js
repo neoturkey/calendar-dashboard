@@ -2,10 +2,15 @@ import React from 'react';
 
 import { gapi } from 'gapi-script';
 
-const DISCOVERY_DOC =
-    'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest';
-const SCOPES =
-    'https://www.googleapis.com/auth/calendar.readonly https://www.googleapis.com/auth/reminders';
+const DISCOVERY_DOCS = [
+    'https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest',
+    'https://tasks.googleapis.com/$discovery/rest?version=v1',
+];
+const SCOPES = [
+    'https://www.googleapis.com/auth/calendar.readonly',
+    'https://www.googleapis.com/auth/reminders',
+    'https://www.googleapis.com/auth/tasks.readonly',
+].join(' ');
 
 const GapiContext = React.createContext();
 
@@ -22,7 +27,7 @@ const GapiProvider = (props) => {
                     .init({
                         apiKey: props.apiKey,
                         clientId: props.clientId,
-                        discoveryDocs: [DISCOVERY_DOC],
+                        discoveryDocs: DISCOVERY_DOCS,
                         scope: SCOPES,
                     })
                     .then(async function () {
