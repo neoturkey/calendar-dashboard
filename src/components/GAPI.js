@@ -33,13 +33,6 @@ const GapiProvider = (props) => {
 
                         gapiAuth.isSignedIn.listen(setGapiClientSignedIn);
                         setGapiClientSignedIn(gapiAuth.isSignedIn.get());
-                        // if (signedIn) {
-                        //     const resp = await gapi.client.request({
-                        //         // path: `https://www.googleapis.com/calendar/v3/calendars/${calendarID}/events`,
-                        //         path: 'https://www.googleapis.com/calendar/v3/users/me/calendarList',
-                        //     });
-                        //     console.log('Resp', resp);
-                        // }
                     });
             });
         };
