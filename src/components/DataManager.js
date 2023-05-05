@@ -8,7 +8,7 @@ import _ from 'lodash';
 
 const calendarID = 'family11306879740916668579@group.calendar.google.com';
 
-const allowedGroups = ['Erin', 'Max'];
+const allowedGroups = ['Erin', 'Max', 'Gus', 'Imi', 'James'];
 function processTitleForSubjects(title) {
     const groupPrefixMatch = title.match(/^([^-]*)-/);
     if (groupPrefixMatch) {
