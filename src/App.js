@@ -8,16 +8,6 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Box } from '@mui/material';
 
-function eventsForGroup(events, group) {
-    const filteredEvents =
-        events && _.filter(events, (event) => _.includes(event.groups, group));
-
-    return {
-        title: group,
-        events: filteredEvents,
-    };
-}
-
 function eventsForWeekend(events) {
     const weekendStart = dayjs().add(-1, 'day').startOf('week').add(6, 'day');
     const weekendEnd = weekendStart.endOf('day').add(1, 'day');
@@ -34,7 +24,7 @@ function eventsForWeekend(events) {
 }
 
 function App() {
-    const { events } = useDataManager();
+    const { events, eventsForGroup } = useDataManager();
 
     return (
         <Box
@@ -51,17 +41,16 @@ function App() {
                 gap: 2,
             }}
         >
-            <EventList {...eventsForGroup(events, 'Erin')} />
-            <EventList {...eventsForGroup(events, 'Max')} />
-            <EventList {...eventsForGroup(events, 'Gus')} />
-            <EventList {...eventsForGroup(events, 'Imi')} />
-            <EventList {...eventsForGroup(events, 'James')} />
+            <EventList events={eventsForGroup('Erin')} title="Erin" />
+            <EventList events={eventsForGroup('Max')} title="Max" />
+            <EventList events={eventsForGroup('Gus')} title="Gus" />
+            <EventList events={eventsForGroup('Imi')} title="Imi" />
+            <EventList events={eventsForGroup('James')} title="James" />
             <EventList
                 title="Family"
-                events={
-                    events &&
-                    _.filter(events, (event) => event.groups.length === 0)
-                }
+                events={eventsForGroup(undefined, {
+                    maxTimestamp: dayjs().startOf('day').add(2, 'day'),
+                })}
             />
             <EventList
                 sx={{

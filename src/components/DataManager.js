@@ -65,7 +65,12 @@ const DataManagerProvider = (props) => {
                 if (groupDetails) {
                     item.groups = groupDetails.groups;
                     item.subject = groupDetails.subject;
+                } else {
+                    item.groups = [];
+                    item.subject = item.summary;
                 }
+
+                item.type = 'calendarEvent';
 
                 item.startTimestamp = dayjs(
                     item.start.dateTime || item.start.date
@@ -102,8 +107,16 @@ const DataManagerProvider = (props) => {
                         if (groupDetails) {
                             item.groups = groupDetails.groups;
                             item.subject = groupDetails.subject;
+                        } else {
+                            item.groups = [];
+                            item.subject = item.title;
                         }
+                        item.type = 'reminder';
                         item.summary = item.title;
+
+                        item.startTimestamp = dayjs(item.dt);
+                        item.endTimestamp = item.startTimestamp;
+
                         return item;
                     })
                     .filter((reminder) => !reminder.done)
@@ -116,8 +129,46 @@ const DataManagerProvider = (props) => {
         console.log('Fetch reminders');
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
+    const eventsForGroup = (group, { maxTimestamp } = {}) => {
+        const calendarEventsForGroup =
+            events &&
+            _.filter(events, (event) =>
+                group !== undefined
+                    ? _.includes(event.groups, group)
+                    : event.groups.length === 0
+            );
+
+        const remindersForGroup =
+            reminders &&
+            _.filter(reminders, (reminder) =>
+                group !== undefined
+                    ? _.includes(reminder.groups, group)
+                    : reminder.groups.length === 0
+            );
+
+        const allEventsForGroup = _.filter(
+            [...(calendarEventsForGroup || []), ...(remindersForGroup || [])],
+            (event) => {
+                if (
+                    maxTimestamp &&
+                    !event.startTimestamp.isBefore(maxTimestamp)
+                )
+                    return false;
+                return true;
+            }
+        );
+
+        return allEventsForGroup.sort((a, b) => {
+            if (a.startTimestamp.isBefore(b.startTimestamp)) return -1;
+            else if (b.startTimestamp.isBefore(a.startTimestamp)) return 1;
+            else return 0;
+        });
+    };
+
     return (
-        <DataManagerContext.Provider value={{ events, reminders }}>
+        <DataManagerContext.Provider
+            value={{ events, reminders, eventsForGroup }}
+        >
             {props.children}
         </DataManagerContext.Provider>
     );
