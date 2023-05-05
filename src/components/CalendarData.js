@@ -46,8 +46,6 @@ const CalendarDataProvider = (props) => {
                 item.groups = []; // Default - will be overridden if appropriate
                 const title = item.summary;
                 const groupPrefixMatch = title.match(/^([^-]*)-/);
-                console.log('GPM', groupPrefixMatch);
-
                 if (groupPrefixMatch) {
                     const prefixes = groupPrefixMatch[1]
                         .split(',')
