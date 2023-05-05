@@ -4,6 +4,7 @@ import { withGapi } from './components/GAPI';
 import { useCalendarData, withCalendarData } from './components/CalendarData';
 import EventList from './components/EventList';
 
+import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Box } from '@mui/material';
 
@@ -15,6 +16,21 @@ function eventsForGroup(events, group) {
         title: group,
         events: filteredEvents,
     };
+}
+
+function eventsForWeekend(events) {
+    const weekendStart = dayjs().add(-1, 'day').startOf('week').add(6, 'day');
+    const weekendEnd = weekendStart.endOf('day').add(1, 'day');
+
+    return (
+        events &&
+        _.filter(events, (event) => {
+            return (
+                event.startTimestamp.isBefore(weekendEnd) &&
+                weekendStart.isBefore(event.endTimestamp)
+            );
+        })
+    );
 }
 
 function App() {
@@ -47,6 +63,7 @@ function App() {
                     _.filter(events, (event) => event.groups.length === 0)
                 }
             />
+            <EventList title="This Weekend" events={eventsForWeekend(events)} />
         </Box>
     );
 }
