@@ -63,6 +63,11 @@ const CalendarDataProvider = (props) => {
                     }
                 }
 
+                item.startTimestamp = dayjs(
+                    item.start.dateTime || item.start.date
+                );
+                item.endTimestamp = dayjs(item.end.dateTime || item.end.date);
+
                 return item;
             });
 
