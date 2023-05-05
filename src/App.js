@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { withGapi } from './components/GAPI';
-import { useCalendarData, withCalendarData } from './components/CalendarData';
+import { useDataManager, withDataManager } from './components/DataManager';
 import EventList from './components/EventList';
 
 import dayjs from 'dayjs';
@@ -34,7 +34,7 @@ function eventsForWeekend(events) {
 }
 
 function App() {
-    const { events } = useCalendarData();
+    const { events } = useDataManager();
 
     return (
         <Box
@@ -80,5 +80,5 @@ export default _.flowRight([
         apiKey: process.env.REACT_APP_GOOGLE_CALENDAR_API_KEY,
         clientId: process.env.REACT_APP_GOOGLE_CALENDAR_CLIENT_ID,
     }),
-    withCalendarData,
+    withDataManager,
 ])(App);

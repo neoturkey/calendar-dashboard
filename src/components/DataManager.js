@@ -23,9 +23,9 @@ function processTitleForSubjects(title) {
     }
 }
 
-const CalendarDataContext = React.createContext();
+const DataManagerContext = React.createContext();
 
-const CalendarDataProvider = (props) => {
+const DataManagerProvider = (props) => {
     const { gapiClient, gapiClientInitialised, gapiClientSignedIn } = useGapi();
 
     const [events, setEvents] = React.useState();
@@ -123,27 +123,25 @@ const CalendarDataProvider = (props) => {
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     return (
-        <CalendarDataContext.Provider value={{ events, reminders }}>
+        <DataManagerContext.Provider value={{ events, reminders }}>
             {props.children}
-        </CalendarDataContext.Provider>
+        </DataManagerContext.Provider>
     );
 };
 
-export const withCalendarData = (InnerComponent, withOpts = {}) => {
-    const CalendarDataHOC = (props) => (
-        <CalendarDataProvider {...withOpts}>
+export const withDataManager = (InnerComponent, withOpts = {}) => {
+    const DataManagerHOC = (props) => (
+        <DataManagerProvider {...withOpts}>
             <InnerComponent {...props} />
-        </CalendarDataProvider>
+        </DataManagerProvider>
     );
-    return CalendarDataHOC;
+    return DataManagerHOC;
 };
 
-export const useCalendarData = () => {
-    const context = React.useContext(CalendarDataContext);
+export const useDataManager = () => {
+    const context = React.useContext(DataManagerContext);
     if (context === undefined || context === null) {
-        throw new Error(
-            'useCalendarData must be called within withCalendarData'
-        );
+        throw new Error('useDataManager must be called within withDataManager');
     }
     return context;
 };
