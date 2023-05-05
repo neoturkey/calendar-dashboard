@@ -1,4 +1,5 @@
 // import React from 'react';
+import dayjs from 'dayjs';
 
 import {
     Avatar,
@@ -11,18 +12,18 @@ import {
     ListItemAvatar,
     ListItemText,
 } from '@mui/material';
+import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
 function EventItem({ event, showAvatars }) {
-    const start = new Date(event.start.dateTime || event.start.date);
+    const start = event.startTimestamp;
 
-    const dateSettings = {
-        weekday: 'short',
-        hour: '2-digit',
-        minute: '2-digit',
-    };
+    const overdue =
+        event.type === 'reminder' && start.isBefore(dayjs().startOf('day'));
+
+    const dateFormat = overdue ? 'ddd DD/MM HH:mm' : 'ddd HH:mm';
 
     return (
-        <ListItem>
+        <ListItem secondaryAction={overdue && <WarningAmberIcon />}>
             {showAvatars && event.groups && event.groups.length > 0 && (
                 <ListItemAvatar>
                     <AvatarGroup>
@@ -34,7 +35,7 @@ function EventItem({ event, showAvatars }) {
             )}
             <ListItemText
                 primary={event.subject || event.summary}
-                secondary={start.toLocaleDateString('en-GB', dateSettings)}
+                secondary={start.format(dateFormat)}
             />
         </ListItem>
     );
