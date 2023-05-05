@@ -2,6 +2,7 @@
 
 import {
     Avatar,
+    AvatarGroup,
     Card,
     CardContent,
     CardHeader,
@@ -11,7 +12,7 @@ import {
     ListItemText,
 } from '@mui/material';
 
-function EventItem({ event, listTitle }) {
+function EventItem({ event, showAvatars }) {
     const start = new Date(event.start.dateTime || event.start.date);
 
     const dateSettings = {
@@ -22,9 +23,15 @@ function EventItem({ event, listTitle }) {
 
     return (
         <ListItem>
-            <ListItemAvatar>
-                <Avatar>{listTitle[0]}</Avatar>
-            </ListItemAvatar>
+            {showAvatars && event.groups && event.groups.length > 0 && (
+                <ListItemAvatar>
+                    <AvatarGroup>
+                        {event.groups.map((group) => (
+                            <Avatar key={group}>{group[0]}</Avatar>
+                        ))}
+                    </AvatarGroup>
+                </ListItemAvatar>
+            )}
             <ListItemText
                 primary={event.subject || event.summary}
                 secondary={start.toLocaleDateString('en-GB', dateSettings)}
@@ -33,10 +40,17 @@ function EventItem({ event, listTitle }) {
     );
 }
 
-export default function EventList({ title, events }) {
+export default function EventList({ sx, title, events, showAvatars }) {
     return (
-        <Card>
-            <CardHeader title={title} />
+        <Card sx={sx}>
+            <CardHeader
+                sx={{
+                    textAlign: 'center',
+                    backgroundColor: 'black',
+                    color: 'white',
+                }}
+                title={title}
+            />
             <CardContent>
                 <List>
                     {events &&
@@ -44,7 +58,7 @@ export default function EventList({ title, events }) {
                             <EventItem
                                 key={event.id}
                                 event={event}
-                                listTitle={title}
+                                showAvatars={showAvatars}
                             />
                         ))}
                 </List>

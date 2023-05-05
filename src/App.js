@@ -63,7 +63,14 @@ function App() {
                     _.filter(events, (event) => event.groups.length === 0)
                 }
             />
-            <EventList title="This Weekend" events={eventsForWeekend(events)} />
+            <EventList
+                sx={{
+                    gridColumn: '1 / 3',
+                }}
+                title="This Weekend"
+                events={eventsForWeekend(events)}
+                showAvatars={true}
+            />
         </Box>
     );
 }
