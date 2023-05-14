@@ -9,6 +9,26 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Box } from '@mui/material';
 
+function groupEventsForTwoDayOutlook(events) {
+    const today = {
+        name: 'Today',
+        events: [],
+    };
+    const tomorrow = {
+        name: 'Tomorrow',
+        events: [],
+    };
+
+    const endOfToday = dayjs().endOf('day');
+
+    _.each(events, (e) => {
+        if (endOfToday.isBefore(e.startTimestamp)) tomorrow.events.push(e);
+        else today.events.push(e);
+    });
+
+    return [today, tomorrow];
+}
+
 function eventsForWeekend(events) {
     const weekendStart = dayjs().add(-1, 'day').startOf('week').add(6, 'day');
     const weekendEnd = weekendStart.endOf('day').add(1, 'day');
@@ -38,6 +58,8 @@ function App() {
         return <WelcomeScreen />;
     }
 
+    const twoDayLimit = dayjs().startOf('day').add(2, 'day');
+
     return (
         <Box
             sx={{
@@ -54,19 +76,41 @@ function App() {
             }}
         >
             <EventList
-                events={eventsForGroup('Erin')}
+                eventGroups={groupEventsForTwoDayOutlook(
+                    eventsForGroup('Erin', { maxTimestamp: twoDayLimit })
+                )}
                 title="Erin"
                 colorScheme="#ef6aef"
             />
-            <EventList events={eventsForGroup('Max')} title="Max" />
-            <EventList events={eventsForGroup('Gus')} title="Gus" />
-            <EventList events={eventsForGroup('Imi')} title="Imi" />
-            <EventList events={eventsForGroup('James')} title="James" />
+            <EventList
+                eventGroups={groupEventsForTwoDayOutlook(
+                    eventsForGroup('Max', { maxTimestamp: twoDayLimit })
+                )}
+                title="Max"
+            />
+            <EventList
+                eventGroups={groupEventsForTwoDayOutlook(
+                    eventsForGroup('Gus', { maxTimestamp: twoDayLimit })
+                )}
+                title="Gus"
+            />
+            <EventList
+                eventGroups={groupEventsForTwoDayOutlook(
+                    eventsForGroup('Imi', { maxTimestamp: twoDayLimit })
+                )}
+                title="Imi"
+            />
+            <EventList
+                eventGroups={groupEventsForTwoDayOutlook(
+                    eventsForGroup('James', { maxTimestamp: twoDayLimit })
+                )}
+                title="James"
+            />
             <EventList
                 title="Family"
-                events={eventsForGroup(undefined, {
-                    maxTimestamp: dayjs().startOf('day').add(2, 'day'),
-                })}
+                eventGroups={groupEventsForTwoDayOutlook(
+                    eventsForGroup(undefined, { maxTimestamp: twoDayLimit })
+                )}
             />
             <EventList
                 sx={{

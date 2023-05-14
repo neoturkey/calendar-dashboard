@@ -4,6 +4,7 @@ import dayjs from 'dayjs';
 import {
     Avatar,
     AvatarGroup,
+    Box,
     Card,
     CardContent,
     CardHeader,
@@ -11,6 +12,7 @@ import {
     ListItem,
     ListItemAvatar,
     ListItemText,
+    Typography,
 } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
@@ -47,9 +49,41 @@ function EventItem({ event, showAvatars }) {
             <ListItemText
                 primary={event.subject || event.summary}
                 secondary={eventDate}
-                inset={!displayAvatar}
+                inset={showAvatars && !displayAvatar}
             />
         </ListItem>
+    );
+}
+
+function ListOfEvents({ events, showAvatars }) {
+    if (!events || events.length === 0) {
+        return (
+            <Box
+                sx={{
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    justifyContent: 'center',
+                    alignItems: 'center',
+                }}
+            >
+                <Typography sx={{ fontStyle: 'italic' }}>
+                    Nothing special
+                </Typography>
+            </Box>
+        );
+    }
+
+    return (
+        <List>
+            {events.map((event) => (
+                <EventItem
+                    key={event.id}
+                    event={event}
+                    showAvatars={showAvatars}
+                />
+            ))}
+        </List>
     );
 }
 
@@ -57,13 +91,14 @@ export default function EventList({
     sx,
     title,
     events,
+    eventGroups,
     showAvatars,
     colorScheme = '#000000',
 }) {
     const textColor = getContrastColor(colorScheme);
 
     return (
-        <Card sx={{ borderColor: 'red', ...sx }}>
+        <Card sx={{ display: 'flex', flexDirection: 'column', ...sx }}>
             <CardHeader
                 sx={{
                     textAlign: 'center',
@@ -72,17 +107,37 @@ export default function EventList({
                 }}
                 title={title}
             />
-            <CardContent>
-                <List>
-                    {events &&
-                        events.map((event) => (
-                            <EventItem
-                                key={event.id}
-                                event={event}
-                                showAvatars={showAvatars}
-                            />
+            <CardContent
+                sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+            >
+                {events && (
+                    <ListOfEvents events={events} showAvatars={showAvatars} />
+                )}
+                {eventGroups && (
+                    <Box
+                        sx={{
+                            display: 'grid',
+                            gridTemplateRows: '1fr '.repeat(eventGroups.length),
+                            flexGrow: 1,
+                        }}
+                    >
+                        {eventGroups.map((eventGroup) => (
+                            <Box
+                                key={eventGroup.name}
+                                sx={{
+                                    display: 'flex',
+                                    flexDirection: 'column',
+                                }}
+                            >
+                                <Typography>{eventGroup.name}</Typography>
+                                <ListOfEvents
+                                    events={eventGroup.events}
+                                    showAvatars={showAvatars}
+                                />
+                            </Box>
                         ))}
-                </List>
+                    </Box>
+                )}
             </CardContent>
         </Card>
     );
