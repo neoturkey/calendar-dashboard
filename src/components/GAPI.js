@@ -20,6 +20,17 @@ const GapiProvider = (props) => {
         React.useState(false);
     const [gapiClientSignedIn, setGapiClientSignedIn] = React.useState();
 
+    function signIn() {
+        if (!gapiClientInitialised) {
+            console.error(
+                'Attempting to signin before gapi client is initialised'
+            );
+            return;
+        }
+
+        gapiClient.auth2.getAuthInstance().signIn();
+    }
+
     React.useEffect(() => {
         const run = async () => {
             await gapi.load('client', function () {
@@ -52,7 +63,12 @@ const GapiProvider = (props) => {
 
     return (
         <GapiContext.Provider
-            value={{ gapiClient, gapiClientInitialised, gapiClientSignedIn }}
+            value={{
+                gapiClient,
+                gapiClientInitialised,
+                gapiClientSignedIn,
+                gapiSignIn: signIn,
+            }}
         >
             {props.children}
         </GapiContext.Provider>

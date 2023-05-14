@@ -1,8 +1,9 @@
 import React from 'react';
 
-import { withGapi } from './components/GAPI';
+import { useGapi, withGapi } from './components/GAPI';
 import { useDataManager, withDataManager } from './components/DataManager';
 import EventList from './components/EventList';
+import WelcomeScreen from './components/WelcomeScreen';
 
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -25,6 +26,17 @@ function eventsForWeekend(events) {
 
 function App() {
     const { events, eventsForGroup } = useDataManager();
+    const { gapiClientSignedIn } = useGapi();
+
+    if (gapiClientSignedIn === undefined) {
+        // TODO - Loading screen
+        return null;
+    }
+
+    if (!gapiClientSignedIn) {
+        // TODO - Welcome screen with signin Button
+        return <WelcomeScreen />;
+    }
 
     return (
         <Box
