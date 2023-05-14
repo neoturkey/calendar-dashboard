@@ -14,6 +14,8 @@ import {
 } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
 
+import { getContrastColor } from '../lib/colors';
+
 import _ from 'lodash';
 
 function EventItem({ event, showAvatars }) {
@@ -28,9 +30,12 @@ function EventItem({ event, showAvatars }) {
     let eventDate = start && start.format(dateFormat);
     if (event.endTimestamp) eventDate += event.endTimestamp.format(' - HH:mm');
 
+    const displayAvatar =
+        showAvatars && event.groups && event.groups.length > 0;
+
     return (
         <ListItem secondaryAction={overdue && <WarningAmberIcon />}>
-            {showAvatars && event.groups && event.groups.length > 0 && (
+            {displayAvatar && (
                 <ListItemAvatar>
                     <AvatarGroup>
                         {event.groups.map((group) => (
@@ -42,19 +47,28 @@ function EventItem({ event, showAvatars }) {
             <ListItemText
                 primary={event.subject || event.summary}
                 secondary={eventDate}
+                inset={!displayAvatar}
             />
         </ListItem>
     );
 }
 
-export default function EventList({ sx, title, events, showAvatars }) {
+export default function EventList({
+    sx,
+    title,
+    events,
+    showAvatars,
+    colorScheme = '#000000',
+}) {
+    const textColor = getContrastColor(colorScheme);
+
     return (
-        <Card sx={sx}>
+        <Card sx={{ borderColor: 'red', ...sx }}>
             <CardHeader
                 sx={{
                     textAlign: 'center',
-                    backgroundColor: 'black',
-                    color: 'white',
+                    backgroundColor: colorScheme,
+                    color: textColor,
                 }}
                 title={title}
             />

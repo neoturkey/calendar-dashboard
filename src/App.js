@@ -34,14 +34,18 @@ function App() {
                 padding: 2,
                 boxSizing: 'border-box',
 
-                backgroundColor: 'purple',
+                // backgroundColor: 'purple',
                 display: 'grid',
                 gridTemplateColumns: '1fr '.repeat(6),
                 gridTemplateRows: '1fr '.repeat(2),
                 gap: 2,
             }}
         >
-            <EventList events={eventsForGroup('Erin')} title="Erin" />
+            <EventList
+                events={eventsForGroup('Erin')}
+                title="Erin"
+                colorScheme="#ef6aef"
+            />
             <EventList events={eventsForGroup('Max')} title="Max" />
             <EventList events={eventsForGroup('Gus')} title="Gus" />
             <EventList events={eventsForGroup('Imi')} title="Imi" />
