@@ -28,9 +28,9 @@ function EventItem({ debug, event, showAvatars, showDay }) {
         console.log('EVENT', event.type, event.subject, event);
     }
 
-    // TODO - event in past is done as well (but don't show check there)
     const done = !!event.done;
 
+    // TODO - Using the timeManager, even just for current day, will cause a re-render.  Can probably fixed with appropriate memoization?
     const overdue =
         start &&
         _.includes(['reminder', 'task'], event.type) &&
@@ -56,7 +56,15 @@ function EventItem({ debug, event, showAvatars, showDay }) {
     const displayAvatar =
         showAvatars && event.groups && event.groups.length > 0;
 
-    const StatusIcon = done ? DoneIcon : overdue ? WarningAmberIcon : undefined;
+    let textOpacity = 1.0;
+    let StatusIcon;
+
+    if (done) {
+        textOpacity = 0.5;
+        if (_.includes(['task', 'reminder'], event.type)) StatusIcon = DoneIcon;
+    } else if (overdue) {
+        StatusIcon = WarningAmberIcon;
+    }
 
     return (
         <ListItem secondaryAction={StatusIcon && <StatusIcon />}>
@@ -70,6 +78,9 @@ function EventItem({ debug, event, showAvatars, showDay }) {
                 </ListItemAvatar>
             )}
             <ListItemText
+                sx={{
+                    opacity: textOpacity,
+                }}
                 primary={event.subject || event.summary}
                 secondary={eventDate}
                 inset={showAvatars && !displayAvatar}
