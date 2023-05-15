@@ -103,10 +103,10 @@ const DataManagerProvider = (props) => {
         }
 
         async function fetchEvents() {
-            const respTaskLists = await gapiClient.client.tasks.tasklists.list({
-                maxResults: 100,
-            });
-            console.log('TaskLists', respTaskLists);
+            // const respTaskLists = await gapiClient.client.tasks.tasklists.list({
+            //     maxResults: 100,
+            // });
+            // console.log('TaskLists', respTaskLists);
 
             const resp = await gapiClient.client.tasks.tasks.list({
                 maxResults: 100,
