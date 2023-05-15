@@ -21,7 +21,7 @@ import { getContrastColor } from '../lib/colors';
 
 import _ from 'lodash';
 
-function EventItem({ debug, event, showAvatars, showDate, showDay }) {
+function EventItem({ debug, sx, event, showAvatars, showDate, showDay }) {
     const start = event.startTimestamp;
 
     if (debug) {
@@ -74,7 +74,7 @@ function EventItem({ debug, event, showAvatars, showDate, showDay }) {
     }
 
     return (
-        <ListItem secondaryAction={StatusIcon && <StatusIcon />}>
+        <ListItem sx={sx} secondaryAction={StatusIcon && <StatusIcon />}>
             {displayAvatar && (
                 <ListItemAvatar>
                     <AvatarGroup>
@@ -94,7 +94,14 @@ function EventItem({ debug, event, showAvatars, showDate, showDay }) {
     );
 }
 
-function ListOfEvents({ debug, events, showAvatars, showDate, showDay }) {
+function ListOfEvents({
+    debug,
+    columns,
+    events,
+    showAvatars,
+    showDate,
+    showDay,
+}) {
     if (!events || events.length === 0) {
         return (
             <Box
@@ -113,11 +120,30 @@ function ListOfEvents({ debug, events, showAvatars, showDate, showDay }) {
         );
     }
 
+    const listStyle = {};
+    const listItemStyle = {};
+    if (columns > 1) {
+        _.extend(listStyle, {
+            display: 'flex',
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+        });
+
+        const cellWidth = {
+            2: '50%',
+            3: '33.3%',
+        }[columns];
+        _.extend(listItemStyle, {
+            width: cellWidth,
+        });
+    }
+
     return (
-        <List>
+        <List sx={listStyle}>
             {events.map((event) => (
                 <EventItem
                     key={event.id}
+                    sx={listItemStyle}
                     debug={debug}
                     event={event}
                     showAvatars={showAvatars}
@@ -132,6 +158,7 @@ function ListOfEvents({ debug, events, showAvatars, showDate, showDay }) {
 export default function EventList({
     sx,
     title,
+    columns = 1,
     debug,
     events,
     eventGroups,
@@ -165,6 +192,7 @@ export default function EventList({
                     <ListOfEvents
                         debug={debug}
                         events={events}
+                        columns={columns}
                         showAvatars={showAvatars}
                         showDate={showDate}
                         showDay={showDay}

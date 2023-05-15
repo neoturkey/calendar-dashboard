@@ -37,7 +37,7 @@ function processCalendarEvent(item) {
         item.subject = groupDetails.subject;
     } else {
         item.groups = [];
-        item.subject = item.summary;
+        item.subject = item.summary.trim();
     }
 
     item.type = 'calendarEvent';
@@ -79,7 +79,7 @@ const DataManagerProvider = (props) => {
                     singleEvents: true,
                     orderBy: 'startTime',
                     timeMin: dayjs().startOf('day').toISOString(),
-                    timeMax: dayjs().endOf('week').add(1, 'day').toISOString(),
+                    timeMax: dayjs().endOf('week').add(10, 'day').toISOString(),
                 },
             });
 

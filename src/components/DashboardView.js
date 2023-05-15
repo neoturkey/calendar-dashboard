@@ -42,6 +42,29 @@ function eventsForWeekend(events) {
     );
 }
 
+function upcomingEvents(events) {
+    const futureStart = dayjs().add(2, 'day').startOf('day');
+
+    const regularEvents = [
+        'Dance',
+        'Football',
+        'Lions - Training',
+        'Piano',
+        'Stage School',
+        'Swimming',
+        'Tennis',
+    ];
+
+    return (
+        events &&
+        _.filter(events, (event) => {
+            if (event.startTimestamp.isBefore(futureStart)) return false;
+            if (_.includes(regularEvents, event.subject)) return false;
+            return true;
+        })
+    );
+}
+
 export default function DashboardView() {
     const { birthdays, events, eventsForGroup } = useDataManager();
 
@@ -134,6 +157,19 @@ export default function DashboardView() {
             />
             <EventList
                 sx={{
+                    gridColumn: '3 / 6',
+                    gridRow: '4 / 6',
+                }}
+                title="Upcoming Outstanding Events"
+                events={upcomingEvents(events)}
+                showAvatars={true}
+                showDay={true}
+                showDate={true}
+                colorScheme="#770abf"
+                columns={2}
+            />
+            <EventList
+                sx={{
                     gridColumn: '6',
                     gridRow: '4 / 6',
                 }}
@@ -146,7 +182,6 @@ export default function DashboardView() {
                 showDay={true}
                 showDate={true}
                 colorScheme="#770abf"
-                debug={true}
             />
             <ClockView
                 sx={{
