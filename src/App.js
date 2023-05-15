@@ -119,6 +119,7 @@ function App() {
                 title="This Weekend"
                 events={eventsForWeekend(events)}
                 showAvatars={true}
+                showDay={true}
             />
         </Box>
     );

@@ -20,7 +20,7 @@ import { getContrastColor } from '../lib/colors';
 
 import _ from 'lodash';
 
-function EventItem({ event, showAvatars }) {
+function EventItem({ event, showAvatars, showDay }) {
     const start = event.startTimestamp;
 
     const overdue =
@@ -28,7 +28,13 @@ function EventItem({ event, showAvatars }) {
         _.includes(['reminder', 'task'], event.type) &&
         start.isBefore(dayjs().startOf('day'));
 
-    const dateFormat = overdue ? 'ddd DD/MM HH:mm' : 'ddd HH:mm';
+    const dateFormatParts = [
+        overdue || showDay ? 'ddd' : '',
+        overdue ? 'DD/MM' : '',
+        'HH:mm',
+    ];
+
+    const dateFormat = _.compact(dateFormatParts).join(' ').trim();
     let eventDate = start && start.format(dateFormat);
     if (event.endTimestamp) eventDate += event.endTimestamp.format(' - HH:mm');
 
@@ -55,7 +61,7 @@ function EventItem({ event, showAvatars }) {
     );
 }
 
-function ListOfEvents({ events, showAvatars }) {
+function ListOfEvents({ events, showAvatars, showDay }) {
     if (!events || events.length === 0) {
         return (
             <Box
@@ -81,6 +87,7 @@ function ListOfEvents({ events, showAvatars }) {
                     key={event.id}
                     event={event}
                     showAvatars={showAvatars}
+                    showDay={showDay}
                 />
             ))}
         </List>
@@ -93,6 +100,7 @@ export default function EventList({
     events,
     eventGroups,
     showAvatars,
+    showDay,
     colorScheme = '#000000',
 }) {
     const textColor = getContrastColor(colorScheme);
@@ -111,7 +119,11 @@ export default function EventList({
                 sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
             >
                 {events && (
-                    <ListOfEvents events={events} showAvatars={showAvatars} />
+                    <ListOfEvents
+                        events={events}
+                        showAvatars={showAvatars}
+                        showDay={showDay}
+                    />
                 )}
                 {eventGroups && (
                     <Box
@@ -133,6 +145,7 @@ export default function EventList({
                                 <ListOfEvents
                                     events={eventGroup.events}
                                     showAvatars={showAvatars}
+                                    showDay={showDay}
                                 />
                             </Box>
                         ))}
