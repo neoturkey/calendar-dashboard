@@ -21,7 +21,7 @@ import { getContrastColor } from '../lib/colors';
 
 import _ from 'lodash';
 
-function EventItem({ debug, event, showAvatars, showDay }) {
+function EventItem({ debug, event, showAvatars, showDate, showDay }) {
     const start = event.startTimestamp;
 
     if (debug) {
@@ -38,7 +38,7 @@ function EventItem({ debug, event, showAvatars, showDay }) {
 
     const dateFormatParts = _.compact([
         overdue || showDay ? 'ddd' : '',
-        overdue ? 'DD/MM' : '',
+        overdue || showDate ? 'DD/MM' : '',
         !event.allDay ? 'HH:mm' : '',
     ]);
 
@@ -94,7 +94,7 @@ function EventItem({ debug, event, showAvatars, showDay }) {
     );
 }
 
-function ListOfEvents({ debug, events, showAvatars, showDay }) {
+function ListOfEvents({ debug, events, showAvatars, showDate, showDay }) {
     if (!events || events.length === 0) {
         return (
             <Box
@@ -121,6 +121,7 @@ function ListOfEvents({ debug, events, showAvatars, showDay }) {
                     debug={debug}
                     event={event}
                     showAvatars={showAvatars}
+                    showDate={showDate}
                     showDay={showDay}
                 />
             ))}
@@ -135,6 +136,7 @@ export default function EventList({
     events,
     eventGroups,
     showAvatars,
+    showDate,
     showDay,
     colorScheme = '#000000',
 }) {
@@ -164,6 +166,7 @@ export default function EventList({
                         debug={debug}
                         events={events}
                         showAvatars={showAvatars}
+                        showDate={showDate}
                         showDay={showDay}
                     />
                 )}
@@ -190,6 +193,7 @@ export default function EventList({
                                     debug={debug}
                                     events={eventGroup.events}
                                     showAvatars={showAvatars}
+                                    showDate={showDate}
                                     showDay={showDay}
                                 />
                             </Box>

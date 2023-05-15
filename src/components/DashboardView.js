@@ -42,7 +42,7 @@ function eventsForWeekend(events) {
 }
 
 export default function DashboardView() {
-    const { events, eventsForGroup } = useDataManager();
+    const { birthdays, events, eventsForGroup } = useDataManager();
 
     const twoDayLimit = dayjs().startOf('day').add(2, 'day');
 
@@ -130,6 +130,18 @@ export default function DashboardView() {
                 showAvatars={true}
                 showDay={true}
                 colorScheme="#770abf"
+            />
+            <EventList
+                sx={{
+                    gridColumn: '6',
+                    gridRow: '4 / 6',
+                }}
+                title="Birthdays"
+                events={birthdays}
+                showDay={true}
+                showDate={true}
+                colorScheme="#770abf"
+                debug={true}
             />
             <ClockView
                 sx={{

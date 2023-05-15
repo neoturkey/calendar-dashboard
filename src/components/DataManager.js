@@ -7,6 +7,8 @@ import { list_reminders } from './reminders';
 import _ from 'lodash';
 
 const calendarID = 'family11306879740916668579@group.calendar.google.com';
+const birthdayCalendarId =
+    '7rkielkkcjuqcgngmfigm8sic8@group.calendar.google.com';
 const tasklistID = 'RHB5eFVyRGI2dlRtS0lRVw';
 
 const allowedGroups = ['Erin', 'Max', 'Gus', 'Imi', 'James'];
@@ -26,10 +28,39 @@ function processTitleForSubjects(title) {
 
 const DataManagerContext = React.createContext();
 
+function processCalendarEvent(item) {
+    item.groups = []; // Default - will be overridden if appropriate
+
+    const groupDetails = processTitleForSubjects(item.summary);
+    if (groupDetails) {
+        item.groups = groupDetails.groups;
+        item.subject = groupDetails.subject;
+    } else {
+        item.groups = [];
+        item.subject = item.summary;
+    }
+
+    item.type = 'calendarEvent';
+
+    // If event has a start time, it'll be provided as start.dateTime, otherwise start.date will be provided
+    item.startTimestamp = dayjs(item.start.dateTime || item.start.date);
+    item.endTimestamp = dayjs(item.end.dateTime || item.end.date);
+    item.allDay = !!item.start.date;
+
+    // TODO - Using currentTime causes a re-render, perhaps refactor at some point
+    // item.done = item.endTimestamp.isBefore(currentTime);
+    item.done = item.endTimestamp.isBefore(dayjs());
+
+    // TODO - If this will be done before the next fetch, perhaps run a timer?
+
+    return item;
+}
+
 const DataManagerProvider = (props) => {
     const { gapiClient, gapiClientInitialised, gapiClientSignedIn } = useGapi();
 
     const [events, setEvents] = React.useState();
+    const [birthdays, setBirthdays] = React.useState();
     const [reminders, setReminders] = React.useState();
     const [tasks, setTasks] = React.useState();
 
@@ -47,49 +78,45 @@ const DataManagerProvider = (props) => {
                 params: {
                     singleEvents: true,
                     orderBy: 'startTime',
-                    timeMin: dayjs()
-                        .startOf('day')
-                        // .add(-1, 'day')
-                        .toISOString(),
-                    timeMax: dayjs()
-                        .endOf('week')
-                        .add(1, 'day')
-                        // .add(3, 'day')
-                        .toISOString(),
+                    timeMin: dayjs().startOf('day').toISOString(),
+                    timeMax: dayjs().endOf('week').add(1, 'day').toISOString(),
                 },
             });
 
-            const processedEvents = _.map(resp.result.items, (item) => {
-                item.groups = []; // Default - will be overridden if appropriate
-
-                const groupDetails = processTitleForSubjects(item.summary);
-                if (groupDetails) {
-                    item.groups = groupDetails.groups;
-                    item.subject = groupDetails.subject;
-                } else {
-                    item.groups = [];
-                    item.subject = item.summary;
-                }
-
-                item.type = 'calendarEvent';
-
-                // If event has a start time, it'll be provided as start.dateTime, otherwise start.date will be provided
-                item.startTimestamp = dayjs(
-                    item.start.dateTime || item.start.date
-                );
-                item.endTimestamp = dayjs(item.end.dateTime || item.end.date);
-                item.allDay = !!item.start.date;
-
-                // TODO - Using currentTime causes a re-render, perhaps refactor at some point
-                // item.done = item.endTimestamp.isBefore(currentTime);
-                item.done = item.endTimestamp.isBefore(dayjs());
-
-                // TODO - If this will be done before the next fetch, perhaps run a timer?
-
-                return item;
-            });
+            const processedEvents = _.map(
+                resp.result.items,
+                processCalendarEvent
+            );
 
             setEvents(processedEvents);
+        }
+        fetchEvents();
+    }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
+
+    React.useEffect(() => {
+        if (!gapiClientInitialised || gapiClientSignedIn === undefined) return;
+
+        if (!gapiClientSignedIn) {
+            setEvents();
+            return;
+        }
+
+        async function fetchEvents() {
+            const resp = await gapiClient.client.request({
+                path: `https://www.googleapis.com/calendar/v3/calendars/${birthdayCalendarId}/events`,
+                params: {
+                    singleEvents: true,
+                    orderBy: 'startTime',
+                    timeMin: dayjs().startOf('day').toISOString(),
+                },
+            });
+
+            const processedEvents = _.map(
+                resp.result.items,
+                processCalendarEvent
+            );
+
+            setBirthdays(processedEvents);
         }
         fetchEvents();
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
@@ -265,7 +292,7 @@ const DataManagerProvider = (props) => {
 
     return (
         <DataManagerContext.Provider
-            value={{ events, reminders, tasks, eventsForGroup }}
+            value={{ birthdays, events, reminders, tasks, eventsForGroup }}
         >
             {props.children}
         </DataManagerContext.Provider>
