@@ -49,7 +49,11 @@ function EventItem({ debug, event, showAvatars, showDay }) {
     let eventDate;
     if (dateFormat) {
         eventDate = start && start.format(dateFormat);
-        if (event.endTimestamp && event.startTimestamp !== event.endTimestamp)
+        if (
+            event.endTimestamp &&
+            !event.allDay &&
+            event.startTimestamp !== event.endTimestamp
+        )
             eventDate += event.endTimestamp.format(' - HH:mm');
     }
 
