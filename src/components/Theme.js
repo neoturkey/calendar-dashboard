@@ -8,10 +8,10 @@ const theme = createTheme({
     },
     typography: {
         // fontFamily: ['Indie Flower'],
-        // fontSize: 20,
+        fontSize: 20,
 
         fontFamily: ['Handlee'],
-        fontSize: 16,
+        // fontSize: 16,
 
         h5: {
             fontFamily: ['Permanent Marker'],

@@ -221,7 +221,10 @@ export default function EventList({
                                     flexDirection: 'column',
                                 }}
                             >
-                                <Typography variant="h6">
+                                <Typography
+                                    sx={{ borderBottom: 'solid 1px' }}
+                                    variant="h6"
+                                >
                                     {eventGroup.name}
                                 </Typography>
                                 <ListOfEvents
