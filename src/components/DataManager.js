@@ -107,7 +107,6 @@ const DataManagerProvider = (props) => {
                 showCompleted: true,
                 showHidden: true,
                 tasklist: tasklistID,
-                completedMin: dayjs().startOf('day').toISOString(),
             });
 
             const processedTasks = _.map(resp.result.items, (item) => {
