@@ -135,6 +135,8 @@ export default function DashboardView() {
                 sx={{
                     gridColumn: '3 / 7',
                     gridRow: '6',
+                    backgroundColor: '#bf670a',
+                    color: 'white',
                 }}
             />
         </Box>

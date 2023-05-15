@@ -14,10 +14,10 @@ export default function ClockView({ sx }) {
                 ...sx,
             }}
         >
-            <Typography sx={{ fontSize: '3rem' }}>
+            <Typography sx={{ fontSize: '3rem' }} variant="clock">
                 {currentTime.format('HH:mm:ss')}
             </Typography>
-            <Typography sx={{ fontSize: '2rem' }}>
+            <Typography sx={{ fontSize: '2rem' }} variant="clock">
                 {currentTime.format('dddd D MMMM, YYYY')}
             </Typography>
         </Paper>

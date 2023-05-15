@@ -18,6 +18,9 @@ const theme = createTheme({
             fontWeight: 'bold',
             fontSize: 20,
         },
+        clock: {
+            fontFamily: 'Righteous',
+        },
     },
     components: {
         MuiList: {
