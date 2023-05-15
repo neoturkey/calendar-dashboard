@@ -9,6 +9,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import _ from 'lodash';
 import DashboardView from './components/DashboardView';
 import LoadingScreen from './components/LoadingScreen';
+import { withTheme } from './components/Theme';
 
 function App() {
     const { gapiClientSignedIn } = useGapi();
@@ -33,4 +34,5 @@ export default _.flowRight([
         clientId: process.env.REACT_APP_GOOGLE_CALENDAR_CLIENT_ID,
     }),
     withDataManager,
+    withTheme,
 ])(App);

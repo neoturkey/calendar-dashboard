@@ -79,6 +79,7 @@ export default function DashboardView() {
                     eventsForGroup('Max', { maxTimestamp: twoDayLimit })
                 )}
                 title="Max"
+                colorScheme="#fa2314"
             />
             <EventList
                 sx={{
@@ -88,6 +89,7 @@ export default function DashboardView() {
                     eventsForGroup('Gus', { maxTimestamp: twoDayLimit })
                 )}
                 title="Gus"
+                colorScheme="#0abf1c"
             />
             <EventList
                 sx={{
@@ -97,6 +99,7 @@ export default function DashboardView() {
                     eventsForGroup('Imi', { maxTimestamp: twoDayLimit })
                 )}
                 title="Imi"
+                colorScheme="#0aaabf"
             />
             <EventList
                 sx={{
@@ -115,6 +118,7 @@ export default function DashboardView() {
                 eventGroups={groupEventsForTwoDayOutlook(
                     eventsForGroup(undefined, { maxTimestamp: twoDayLimit })
                 )}
+                colorScheme="#bf670a"
             />
             <EventList
                 sx={{
@@ -125,6 +129,7 @@ export default function DashboardView() {
                 events={eventsForWeekend(events)}
                 showAvatars={true}
                 showDay={true}
+                colorScheme="#770abf"
             />
             <ClockView
                 sx={{

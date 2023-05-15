@@ -56,11 +56,14 @@ function EventItem({ debug, event, showAvatars, showDay }) {
     const displayAvatar =
         showAvatars && event.groups && event.groups.length > 0;
 
-    let textOpacity = 1.0;
+    let styleOverrides = {};
     let StatusIcon;
 
     if (done) {
-        textOpacity = 0.5;
+        _.extend(styleOverrides, {
+            opacity: 0.5,
+            textDecoration: 'line-through #888',
+        });
         if (_.includes(['task', 'reminder'], event.type)) StatusIcon = DoneIcon;
     } else if (overdue) {
         StatusIcon = WarningAmberIcon;
@@ -78,9 +81,7 @@ function EventItem({ debug, event, showAvatars, showDay }) {
                 </ListItemAvatar>
             )}
             <ListItemText
-                sx={{
-                    opacity: textOpacity,
-                }}
+                sx={styleOverrides}
                 primary={event.subject || event.summary}
                 secondary={eventDate}
                 inset={showAvatars && !displayAvatar}
@@ -146,7 +147,13 @@ export default function EventList({
                 title={title}
             />
             <CardContent
-                sx={{ flexGrow: 1, display: 'flex', flexDirection: 'column' }}
+                sx={{
+                    flexGrow: 1,
+                    display: 'flex',
+                    flexDirection: 'column',
+                    backgroundColor: '#0C0D0C',
+                    color: 'white',
+                }}
             >
                 {events && (
                     <ListOfEvents
@@ -172,7 +179,9 @@ export default function EventList({
                                     flexDirection: 'column',
                                 }}
                             >
-                                <Typography>{eventGroup.name}</Typography>
+                                <Typography variant="h6">
+                                    {eventGroup.name}
+                                </Typography>
                                 <ListOfEvents
                                     debug={debug}
                                     events={eventGroup.events}
