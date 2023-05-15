@@ -73,10 +73,12 @@ const DataManagerProvider = (props) => {
 
                 item.type = 'calendarEvent';
 
+                // If event has a start time, it'll be provided as start.dateTime, otherwise start.date will be provided
                 item.startTimestamp = dayjs(
                     item.start.dateTime || item.start.date
                 );
                 item.endTimestamp = dayjs(item.end.dateTime || item.end.date);
+                item.allDay = !!item.start.date;
 
                 return item;
             });
@@ -118,7 +120,13 @@ const DataManagerProvider = (props) => {
                 }
 
                 item.type = 'task';
-                if (item.due) item.startTimestamp = dayjs(item.due);
+                if (item.due) {
+                    item.startTimestamp = dayjs(item.due);
+                    item.allDay = _.includes(
+                        ['00:00', '01:00'],
+                        item.startTimestamp.format('HH:mm')
+                    );
+                }
 
                 return item;
             });
@@ -159,6 +167,10 @@ const DataManagerProvider = (props) => {
 
                         item.startTimestamp = dayjs(item.dt);
                         item.endTimestamp = item.startTimestamp;
+                        item.allDay = _.includes(
+                            ['00:00', '01:00'],
+                            item.startTimestamp.format('HH:mm')
+                        );
 
                         return item;
                     })

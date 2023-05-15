@@ -32,15 +32,22 @@ function EventItem({ debug, event, showAvatars, showDay }) {
         _.includes(['reminder', 'task'], event.type) &&
         start.isBefore(dayjs().startOf('day'));
 
-    const dateFormatParts = [
+    const dateFormatParts = _.compact([
         overdue || showDay ? 'ddd' : '',
         overdue ? 'DD/MM' : '',
-        'HH:mm',
-    ];
+        !event.allDay ? 'HH:mm' : '',
+    ]);
 
-    const dateFormat = _.compact(dateFormatParts).join(' ').trim();
-    let eventDate = start && start.format(dateFormat);
-    if (event.endTimestamp) eventDate += event.endTimestamp.format(' - HH:mm');
+    const dateFormat = dateFormatParts.length
+        ? dateFormatParts.join(' ').trim()
+        : undefined;
+
+    let eventDate;
+    if (dateFormat) {
+        eventDate = start && start.format(dateFormat);
+        if (event.endTimestamp && event.startTimestamp !== event.endTimestamp)
+            eventDate += event.endTimestamp.format(' - HH:mm');
+    }
 
     const displayAvatar =
         showAvatars && event.groups && event.groups.length > 0;
