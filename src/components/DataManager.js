@@ -80,6 +80,12 @@ const DataManagerProvider = (props) => {
                 item.endTimestamp = dayjs(item.end.dateTime || item.end.date);
                 item.allDay = !!item.start.date;
 
+                // TODO - Using currentTime causes a re-render, perhaps refactor at some point
+                // item.done = item.endTimestamp.isBefore(currentTime);
+                item.done = item.endTimestamp.isBefore(dayjs());
+
+                // TODO - If this will be done before the next fetch, perhaps run a timer?
+
                 return item;
             });
 
