@@ -1,6 +1,11 @@
 import { ThemeProvider, createTheme } from '@mui/material';
 
 const theme = createTheme({
+    palette: {
+        badge: {
+            main: '#ffffff',
+        },
+    },
     typography: {
         // fontFamily: ['Indie Flower'],
         // fontSize: 20,

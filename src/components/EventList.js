@@ -3,7 +3,7 @@ import dayjs from 'dayjs';
 
 import {
     Avatar,
-    AvatarGroup,
+    Badge,
     Box,
     Card,
     CardContent,
@@ -59,6 +59,21 @@ function EventItem({ debug, sx, event, showAvatars, showDate, showDay }) {
 
     const displayAvatar =
         showAvatars && event.groups && event.groups.length > 0;
+    let ThisAvatar;
+    if (displayAvatar) {
+        if (event.groups.length > 1) {
+            ThisAvatar = (
+                <Badge
+                    badgeContent={`+${event.groups.length - 1}`}
+                    color="badge"
+                >
+                    <Avatar>{event.groups[0][0]}</Avatar>
+                </Badge>
+            );
+        } else {
+            ThisAvatar = <Avatar>{event.groups[0][0]}</Avatar>;
+        }
+    }
 
     let styleOverrides = {};
     let StatusIcon;
@@ -75,15 +90,7 @@ function EventItem({ debug, sx, event, showAvatars, showDate, showDay }) {
 
     return (
         <ListItem sx={sx} secondaryAction={StatusIcon && <StatusIcon />}>
-            {displayAvatar && (
-                <ListItemAvatar>
-                    <AvatarGroup>
-                        {event.groups.map((group) => (
-                            <Avatar key={group}>{group[0]}</Avatar>
-                        ))}
-                    </AvatarGroup>
-                </ListItemAvatar>
-            )}
+            {displayAvatar && <ListItemAvatar>{ThisAvatar}</ListItemAvatar>}
             <ListItemText
                 sx={styleOverrides}
                 primary={event.subject || event.summary}
