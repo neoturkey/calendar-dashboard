@@ -73,11 +73,14 @@ function App() {
                 // backgroundColor: 'purple',
                 display: 'grid',
                 gridTemplateColumns: '1fr '.repeat(6),
-                gridTemplateRows: '1fr '.repeat(2),
+                gridTemplateRows: '1fr '.repeat(6),
                 gap: 2,
             }}
         >
             <EventList
+                sx={{
+                    gridRow: '1 / 4',
+                }}
                 eventGroups={groupEventsForTwoDayOutlook(
                     eventsForGroup('Erin', { maxTimestamp: twoDayLimit })
                 )}
@@ -85,30 +88,45 @@ function App() {
                 colorScheme="#ef6aef"
             />
             <EventList
+                sx={{
+                    gridRow: '1 / 4',
+                }}
                 eventGroups={groupEventsForTwoDayOutlook(
                     eventsForGroup('Max', { maxTimestamp: twoDayLimit })
                 )}
                 title="Max"
             />
             <EventList
+                sx={{
+                    gridRow: '1 / 4',
+                }}
                 eventGroups={groupEventsForTwoDayOutlook(
                     eventsForGroup('Gus', { maxTimestamp: twoDayLimit })
                 )}
                 title="Gus"
             />
             <EventList
+                sx={{
+                    gridRow: '1 / 4',
+                }}
                 eventGroups={groupEventsForTwoDayOutlook(
                     eventsForGroup('Imi', { maxTimestamp: twoDayLimit })
                 )}
                 title="Imi"
             />
             <EventList
+                sx={{
+                    gridRow: '1 / 4',
+                }}
                 eventGroups={groupEventsForTwoDayOutlook(
                     eventsForGroup('James', { maxTimestamp: twoDayLimit })
                 )}
                 title="James"
             />
             <EventList
+                sx={{
+                    gridRow: '1 / 4',
+                }}
                 title="Family"
                 eventGroups={groupEventsForTwoDayOutlook(
                     eventsForGroup(undefined, { maxTimestamp: twoDayLimit })
@@ -117,6 +135,7 @@ function App() {
             <EventList
                 sx={{
                     gridColumn: '1 / 3',
+                    gridRow: '4 / 7',
                 }}
                 title="This Weekend"
                 events={eventsForWeekend(events)}
@@ -125,8 +144,8 @@ function App() {
             />
             <ClockView
                 sx={{
-                    gridColumn: '5 / 7',
-                    gridRow: '2',
+                    gridColumn: '3 / 7',
+                    gridRow: '6',
                 }}
             />
         </Box>
