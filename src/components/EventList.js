@@ -139,7 +139,7 @@ function ListOfEvents({
     }
 
     return (
-        <List sx={listStyle}>
+        <List sx={listStyle} dense={true}>
             {events.map((event) => (
                 <EventItem
                     key={event.id}

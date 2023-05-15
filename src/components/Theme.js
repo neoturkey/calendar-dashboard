@@ -23,22 +23,6 @@ const theme = createTheme({
         },
     },
     components: {
-        MuiList: {
-            styleOverrides: {
-                root: {
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                },
-            },
-        },
-        MuiListItem: {
-            styleOverrides: {
-                root: {
-                    paddingTop: 0,
-                    paddingBottom: 0,
-                },
-            },
-        },
         MuiListItemText: {
             styleOverrides: {
                 secondary: {
