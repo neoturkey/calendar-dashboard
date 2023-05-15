@@ -103,8 +103,11 @@ const DataManagerProvider = (props) => {
             console.log('TaskLists', respTaskLists);
 
             const resp = await gapiClient.client.tasks.tasks.list({
-                tasklist: tasklistID,
                 maxResults: 100,
+                showCompleted: true,
+                showHidden: true,
+                tasklist: tasklistID,
+                completedMin: dayjs().startOf('day').toISOString(),
             });
 
             const processedTasks = _.map(resp.result.items, (item) => {
@@ -127,6 +130,8 @@ const DataManagerProvider = (props) => {
                         item.startTimestamp.format('HH:mm')
                     );
                 }
+
+                item.done = item.status === 'completed';
 
                 return item;
             });

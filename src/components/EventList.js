@@ -15,6 +15,7 @@ import {
     Typography,
 } from '@mui/material';
 import WarningAmberIcon from '@mui/icons-material/WarningAmber';
+import DoneIcon from '@mui/icons-material/Done';
 
 import { getContrastColor } from '../lib/colors';
 
@@ -26,6 +27,9 @@ function EventItem({ debug, event, showAvatars, showDay }) {
     if (debug) {
         console.log('EVENT', event.type, event.subject, event);
     }
+
+    // TODO - event in past is done as well (but don't show check there)
+    const done = !!event.done;
 
     const overdue =
         start &&
@@ -52,8 +56,10 @@ function EventItem({ debug, event, showAvatars, showDay }) {
     const displayAvatar =
         showAvatars && event.groups && event.groups.length > 0;
 
+    const StatusIcon = done ? DoneIcon : overdue ? WarningAmberIcon : undefined;
+
     return (
-        <ListItem secondaryAction={overdue && <WarningAmberIcon />}>
+        <ListItem secondaryAction={StatusIcon && <StatusIcon />}>
             {displayAvatar && (
                 <ListItemAvatar>
                     <AvatarGroup>
