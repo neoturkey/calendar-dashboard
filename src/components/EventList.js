@@ -20,8 +20,12 @@ import { getContrastColor } from '../lib/colors';
 
 import _ from 'lodash';
 
-function EventItem({ event, showAvatars, showDay }) {
+function EventItem({ debug, event, showAvatars, showDay }) {
     const start = event.startTimestamp;
+
+    if (debug) {
+        console.log('EVENT', event.type, event.subject, event);
+    }
 
     const overdue =
         start &&
@@ -61,7 +65,7 @@ function EventItem({ event, showAvatars, showDay }) {
     );
 }
 
-function ListOfEvents({ events, showAvatars, showDay }) {
+function ListOfEvents({ debug, events, showAvatars, showDay }) {
     if (!events || events.length === 0) {
         return (
             <Box
@@ -85,6 +89,7 @@ function ListOfEvents({ events, showAvatars, showDay }) {
             {events.map((event) => (
                 <EventItem
                     key={event.id}
+                    debug={debug}
                     event={event}
                     showAvatars={showAvatars}
                     showDay={showDay}
@@ -97,6 +102,7 @@ function ListOfEvents({ events, showAvatars, showDay }) {
 export default function EventList({
     sx,
     title,
+    debug,
     events,
     eventGroups,
     showAvatars,
@@ -120,6 +126,7 @@ export default function EventList({
             >
                 {events && (
                     <ListOfEvents
+                        debug={debug}
                         events={events}
                         showAvatars={showAvatars}
                         showDay={showDay}
@@ -143,6 +150,7 @@ export default function EventList({
                             >
                                 <Typography>{eventGroup.name}</Typography>
                                 <ListOfEvents
+                                    debug={debug}
                                     events={eventGroup.events}
                                     showAvatars={showAvatars}
                                     showDay={showDay}
