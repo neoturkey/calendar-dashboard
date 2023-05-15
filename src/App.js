@@ -9,6 +9,7 @@ import WelcomeScreen from './components/WelcomeScreen';
 import dayjs from 'dayjs';
 import _ from 'lodash';
 import { Box } from '@mui/material';
+import ClockView from './components/ClockView';
 
 function groupEventsForTwoDayOutlook(events) {
     const today = {
@@ -121,6 +122,12 @@ function App() {
                 events={eventsForWeekend(events)}
                 showAvatars={true}
                 showDay={true}
+            />
+            <ClockView
+                sx={{
+                    gridColumn: '5 / 7',
+                    gridRow: '2',
+                }}
             />
         </Box>
     );
