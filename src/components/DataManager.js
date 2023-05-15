@@ -108,6 +108,8 @@ const DataManagerProvider = (props) => {
             // });
             // console.log('TaskLists', respTaskLists);
 
+            const today = dayjs().startOf('day');
+
             const resp = await gapiClient.client.tasks.tasks.list({
                 maxResults: 100,
                 showCompleted: true,
@@ -115,31 +117,42 @@ const DataManagerProvider = (props) => {
                 tasklist: tasklistID,
             });
 
-            const processedTasks = _.map(resp.result.items, (item) => {
-                item.groups = []; // Default - will be overridden if appropriate
+            const processedTasks = _(resp.result.items)
+                .filter((item) => {
+                    if (
+                        item.status === 'completed' &&
+                        dayjs(item.completed).isBefore(today)
+                    )
+                        return false;
 
-                const groupDetails = processTitleForSubjects(item.title);
-                if (groupDetails) {
-                    item.groups = groupDetails.groups;
-                    item.subject = groupDetails.subject;
-                } else {
-                    item.groups = [];
-                    item.subject = item.title;
-                }
+                    return true;
+                })
+                .map((item) => {
+                    item.groups = []; // Default - will be overridden if appropriate
 
-                item.type = 'task';
-                if (item.due) {
-                    item.startTimestamp = dayjs(item.due);
-                    item.allDay = _.includes(
-                        ['00:00', '01:00'],
-                        item.startTimestamp.format('HH:mm')
-                    );
-                }
+                    const groupDetails = processTitleForSubjects(item.title);
+                    if (groupDetails) {
+                        item.groups = groupDetails.groups;
+                        item.subject = groupDetails.subject;
+                    } else {
+                        item.groups = [];
+                        item.subject = item.title;
+                    }
 
-                item.done = item.status === 'completed';
+                    item.type = 'task';
+                    if (item.due) {
+                        item.startTimestamp = dayjs(item.due);
+                        item.allDay = _.includes(
+                            ['00:00', '01:00'],
+                            item.startTimestamp.format('HH:mm')
+                        );
+                    }
 
-                return item;
-            });
+                    item.done = item.status === 'completed';
+
+                    return item;
+                })
+                .value();
 
             setTasks(processedTasks);
         }
