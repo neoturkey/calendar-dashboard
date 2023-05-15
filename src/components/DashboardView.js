@@ -1,7 +1,8 @@
 import EventList from './EventList';
-import { Box } from '@mui/material';
+import { Box, Typography } from '@mui/material';
 import ClockView from './ClockView';
 import { useDataManager } from './DataManager';
+import CakeIcon from '@mui/icons-material/Cake';
 
 import dayjs from 'dayjs';
 import _ from 'lodash';
@@ -136,7 +137,11 @@ export default function DashboardView() {
                     gridColumn: '6',
                     gridRow: '4 / 6',
                 }}
-                title="Birthdays"
+                title={
+                    <Typography variant="h5">
+                        <CakeIcon /> Birthdays <CakeIcon />
+                    </Typography>
+                }
                 events={birthdays}
                 showDay={true}
                 showDate={true}
