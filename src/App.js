@@ -8,21 +8,22 @@ import WelcomeScreen from './components/WelcomeScreen';
 
 import _ from 'lodash';
 import DashboardView from './components/DashboardView';
+import LoadingScreen from './components/LoadingScreen';
 
 function App() {
     const { gapiClientSignedIn } = useGapi();
 
+    let CurrentView;
+
     if (gapiClientSignedIn === undefined) {
-        // TODO - Loading screen
-        return null;
+        CurrentView = LoadingScreen;
+    } else if (!gapiClientSignedIn) {
+        CurrentView = WelcomeScreen;
+    } else {
+        CurrentView = DashboardView;
     }
 
-    if (!gapiClientSignedIn) {
-        // TODO - Welcome screen with signin Button
-        return <WelcomeScreen />;
-    }
-
-    return <DashboardView />;
+    return <CurrentView />;
 }
 
 export default _.flowRight([
