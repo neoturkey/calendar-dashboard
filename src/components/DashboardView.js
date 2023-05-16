@@ -8,6 +8,8 @@ import dayjs from 'dayjs';
 import _ from 'lodash';
 
 function groupEventsForTwoDayOutlook(events) {
+    if (!events) return;
+
     const today = {
         name: 'Today',
         events: [],

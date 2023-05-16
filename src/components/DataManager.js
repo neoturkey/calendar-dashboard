@@ -64,6 +64,13 @@ const DataManagerProvider = (props) => {
     const [reminders, setReminders] = React.useState();
     const [tasks, setTasks] = React.useState();
 
+    const [dataInitialised, setDataInitialised] = React.useState({
+        events: false,
+        birthdays: false,
+        reminders: false,
+        tasks: false,
+    });
+
     React.useEffect(() => {
         if (!gapiClientInitialised || gapiClientSignedIn === undefined) return;
 
@@ -89,6 +96,7 @@ const DataManagerProvider = (props) => {
             );
 
             setEvents(processedEvents);
+            setDataInitialised((old) => ({ ...old, events: true }));
         }
         fetchEvents();
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
@@ -117,6 +125,7 @@ const DataManagerProvider = (props) => {
             );
 
             setBirthdays(processedEvents);
+            setDataInitialised((old) => ({ ...old, birthdays: true }));
         }
         fetchEvents();
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
@@ -182,6 +191,7 @@ const DataManagerProvider = (props) => {
                 .value();
 
             setTasks(processedTasks);
+            setDataInitialised((old) => ({ ...old, tasks: true }));
         }
         fetchEvents();
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
@@ -228,11 +238,16 @@ const DataManagerProvider = (props) => {
                     .value();
 
                 setReminders(processedReminders);
+                setDataInitialised((old) => ({ ...old, reminders: true }));
             }
         );
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     const eventsForGroup = (group, { maxTimestamp } = {}) => {
+        if (dataInitialised.events !== true) return;
+        if (dataInitialised.tasks !== true) return;
+        if (dataInitialised.reminders !== true) return;
+
         const calendarEventsForGroup =
             events &&
             _.filter(events, (event) =>

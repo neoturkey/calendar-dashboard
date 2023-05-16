@@ -8,6 +8,7 @@ import {
     Card,
     CardContent,
     CardHeader,
+    CircularProgress,
     List,
     ListItem,
     ListItemAvatar,
@@ -20,6 +21,21 @@ import DoneIcon from '@mui/icons-material/Done';
 import { getContrastColor } from '../lib/colors';
 
 import _ from 'lodash';
+
+function LoadingPanel() {
+    return (
+        <Box
+            sx={{
+                flexGrow: 1,
+                display: 'flex',
+                justifyContent: 'center',
+                alignItems: 'center',
+            }}
+        >
+            <CircularProgress />
+        </Box>
+    );
+}
 
 function EventItem({ debug, sx, event, showAvatars, showDate, showDay }) {
     const start = event.startTimestamp;
@@ -195,6 +211,7 @@ export default function EventList({
                     color: 'white',
                 }}
             >
+                {!events && !eventGroups && <LoadingPanel />}
                 {events && (
                     <ListOfEvents
                         debug={debug}
