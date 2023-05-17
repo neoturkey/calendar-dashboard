@@ -52,13 +52,9 @@ const GapiProvider = (props) => {
                     });
             });
         };
-        run()
-            .then(() => {
-                console.log('Done');
-            })
-            .catch((err) => {
-                console.error('GAPI Error', err);
-            });
+        run().catch((err) => {
+            console.error('Error initialising GAPI Client', err);
+        });
     }, []);
 
     return (
