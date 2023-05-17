@@ -33,6 +33,8 @@ export default _.flowRight([
         apiKey: process.env.REACT_APP_GOOGLE_CALENDAR_API_KEY,
         clientId: process.env.REACT_APP_GOOGLE_CALENDAR_CLIENT_ID,
     }),
-    withDataManager,
+    _.partial(withDataManager, _, {
+        fetchInterval: 60 * 1000,
+    }),
     withTheme,
 ])(App);

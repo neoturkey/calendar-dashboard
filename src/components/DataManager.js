@@ -56,7 +56,7 @@ function processCalendarEvent(item) {
     return item;
 }
 
-const DataManagerProvider = (props) => {
+const DataManagerProvider = ({ children, fetchInterval }) => {
     const { gapiClient, gapiClientInitialised, gapiClientSignedIn } = useGapi();
 
     const [events, setEvents] = React.useState();
@@ -98,7 +98,14 @@ const DataManagerProvider = (props) => {
             setEvents(processedEvents);
             setDataInitialised((old) => ({ ...old, events: true }));
         }
+
+        let intervalId;
         fetchEvents();
+        if (fetchInterval) intervalId = setInterval(fetchEvents, fetchInterval);
+
+        return () => {
+            if (intervalId !== undefined) clearInterval(intervalId);
+        };
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     React.useEffect(() => {
@@ -127,7 +134,14 @@ const DataManagerProvider = (props) => {
             setBirthdays(processedEvents);
             setDataInitialised((old) => ({ ...old, birthdays: true }));
         }
+
+        let intervalId;
         fetchEvents();
+        if (fetchInterval) intervalId = setInterval(fetchEvents, fetchInterval);
+
+        return () => {
+            if (intervalId !== undefined) clearInterval(intervalId);
+        };
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     React.useEffect(() => {
@@ -193,7 +207,14 @@ const DataManagerProvider = (props) => {
             setTasks(processedTasks);
             setDataInitialised((old) => ({ ...old, tasks: true }));
         }
+
+        let intervalId;
         fetchEvents();
+        if (fetchInterval) intervalId = setInterval(fetchEvents, fetchInterval);
+
+        return () => {
+            if (intervalId !== undefined) clearInterval(intervalId);
+        };
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     React.useEffect(() => {
@@ -203,44 +224,54 @@ const DataManagerProvider = (props) => {
             return;
         }
 
-        list_reminders(
-            100,
-            gapiClient.auth2
-                .getAuthInstance()
-                .currentUser.get()
-                .getAuthResponse().access_token,
-            function (remindersResp) {
-                const processedReminders = _(remindersResp)
-                    .map((item) => {
-                        const groupDetails = processTitleForSubjects(
-                            item.title
-                        );
-                        if (groupDetails) {
-                            item.groups = groupDetails.groups;
-                            item.subject = groupDetails.subject;
-                        } else {
-                            item.groups = [];
-                            item.subject = item.title;
-                        }
-                        item.type = 'reminder';
-                        item.summary = item.title;
+        function fetchEvents() {
+            list_reminders(
+                100,
+                gapiClient.auth2
+                    .getAuthInstance()
+                    .currentUser.get()
+                    .getAuthResponse().access_token,
+                function (remindersResp) {
+                    const processedReminders = _(remindersResp)
+                        .map((item) => {
+                            const groupDetails = processTitleForSubjects(
+                                item.title
+                            );
+                            if (groupDetails) {
+                                item.groups = groupDetails.groups;
+                                item.subject = groupDetails.subject;
+                            } else {
+                                item.groups = [];
+                                item.subject = item.title;
+                            }
+                            item.type = 'reminder';
+                            item.summary = item.title;
 
-                        item.startTimestamp = dayjs(item.dt);
-                        item.endTimestamp = item.startTimestamp;
-                        item.allDay = _.includes(
-                            ['00:00', '01:00'],
-                            item.startTimestamp.format('HH:mm')
-                        );
+                            item.startTimestamp = dayjs(item.dt);
+                            item.endTimestamp = item.startTimestamp;
+                            item.allDay = _.includes(
+                                ['00:00', '01:00'],
+                                item.startTimestamp.format('HH:mm')
+                            );
 
-                        return item;
-                    })
-                    .filter((reminder) => !reminder.done)
-                    .value();
+                            return item;
+                        })
+                        .filter((reminder) => !reminder.done)
+                        .value();
 
-                setReminders(processedReminders);
-                setDataInitialised((old) => ({ ...old, reminders: true }));
-            }
-        );
+                    setReminders(processedReminders);
+                    setDataInitialised((old) => ({ ...old, reminders: true }));
+                }
+            );
+        }
+
+        let intervalId;
+        fetchEvents();
+        if (fetchInterval) intervalId = setInterval(fetchEvents, fetchInterval);
+
+        return () => {
+            if (intervalId !== undefined) clearInterval(intervalId);
+        };
     }, [gapiClient, gapiClientInitialised, gapiClientSignedIn]);
 
     const eventsForGroup = (group, { maxTimestamp } = {}) => {
@@ -309,7 +340,7 @@ const DataManagerProvider = (props) => {
         <DataManagerContext.Provider
             value={{ birthdays, events, reminders, tasks, eventsForGroup }}
         >
-            {props.children}
+            {children}
         </DataManagerContext.Provider>
     );
 };
