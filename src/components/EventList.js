@@ -225,8 +225,8 @@ export default function EventList({
                 {eventGroups && (
                     <Box
                         sx={{
-                            display: 'grid',
-                            gridTemplateRows: '1fr '.repeat(eventGroups.length),
+                            display: 'flex',
+                            flexDirection: 'column',
                             flexGrow: 1,
                         }}
                     >
@@ -236,6 +236,9 @@ export default function EventList({
                                 sx={{
                                     display: 'flex',
                                     flexDirection: 'column',
+                                    flexGrow: 1,
+                                    flexShrink: 1,
+                                    flexBasis: 0,
                                 }}
                             >
                                 <Typography
