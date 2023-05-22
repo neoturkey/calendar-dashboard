@@ -48,10 +48,13 @@ function upcomingEvents(events) {
     const futureStart = dayjs().add(2, 'day').startOf('day');
 
     const regularEvents = [
+        'Athletics',
         'Dance',
         'Football',
+        'Gymnastics',
         'Lions - Training',
         'Piano',
+        'Rounders',
         'Stage School',
         'Swimming',
         'Tennis',
