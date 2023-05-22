@@ -165,7 +165,7 @@ export default function DashboardView() {
                     gridColumn: '3 / 6',
                     gridRow: '4 / 6',
                 }}
-                title="Upcoming Outstanding Events"
+                title="Upcoming Special Events"
                 events={upcomingEvents(events)}
                 showAvatars={true}
                 showDay={true}
